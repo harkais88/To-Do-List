@@ -6,19 +6,21 @@ def index(request, config = {}):
     config['tasks'] = Task.objects.all()
     config['create_status'] = request.session.pop('create_status',None)
     config['delete_status'] = request.session.pop('delete_status',None)
+    config['update_id'] = request.session.pop('update_id',None)
+    config['update_status'] = request.session.pop('update_status',None)
 
     return render(request, "index.html", config)
 
 def create(request):
-    config = {}
     if request.method == "POST":
         name = request.POST['name']
-        status = request.POST['status']
+        # status = request.POST['status']
 
         duplicates_exist = Task.objects.filter(name = name).count() > 0
 
         if not duplicates_exist:
-            task = Task(name = name, status = status)
+            # task = Task(name = name, status = status)
+            task = Task(name = name)
             task.save()
             request.session['create_status'] = 'Task Successfully Added'
         else:
@@ -26,7 +28,6 @@ def create(request):
     return redirect('index')
 
 def delete(request, task_id):
-    config = {}
     if request.method == "POST":
         try:
             task = Task.objects.get(id = task_id)
@@ -35,6 +36,17 @@ def delete(request, task_id):
             request.session['delete_status'] = f"Task {task_name} successfully deleted"
         except Task.DoesNotExist:
             request.session['delete_status'] = f"Task {task_name} failed to delete"
-    return redirect('index')       
+    return redirect('index')
 
+def update(request, task_id):
+    if request.method == "POST":
+        try:
+            task = Task.objects.get(id = task_id)
+            task.status = "Completed" if task.status == "Pending" else "Pending"
+            task.save()
+            request.session['update_id'] = task.id
+            request.session['update_status'] = f"Task {task.name} updated"
+        except Task.DoesNotExist:
+            request.session['update_status'] = f"Task ID {task_id} does not exist"       
+    return redirect('index')
 
