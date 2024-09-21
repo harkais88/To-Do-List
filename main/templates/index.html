@@ -22,9 +22,8 @@
         {% for task in tasks %}
         <tr>
             <td> {{task.name}} </td>
-            {% comment %} <td> {{task.status}} </td> {% endcomment %}
             <td>
-                <form method = "POST" action = "{% url 'update' task.id %}">
+                <form method = "POST" action = "{% url 'update_status' task.id %}">
                     {% csrf_token %}
                     <input type="hidden" name="status" value="{% if task.status == 'Completed' %}Pending{% else %}Completed{% endif %}">
                     <input type="checkbox" name="status" id="status" {% if task.status == "Completed" %}checked{% endif%} onchange="this.form.submit()">
@@ -37,9 +36,21 @@
                     <input type="submit" value="Delete Task">
                 </form>
             </td>
+ 
+            <td>
+                <form method="post" action = {% url "update_name" task.id%}>
+                    {% csrf_token %}
+                    <input type="text" name="updated_name" id="updated_name" placeholder="Change Task">
+                    <input type="submit" value="Change">
+                </form>
+            </td>
 
-            {% if update_status and task.id == update_id %}
-            <td> {{update_status}} </td>
+            {% if update_status_status and task.id == update_status_id %}
+            <td> {{update_status_status}} </td>
+            {% endif %}
+
+            {% if update_name_status and task.id == update_name_id %}
+            <td> {{update_name_status}} </td>
             {% endif %}
         </tr>
         {% endfor %}
@@ -51,10 +62,6 @@
     <form method = "POST" action="{% url 'create' %}">
         {% csrf_token %}
         <input type="text" name="name" id="name" placeholder="Enter task">
-        {% comment %} <select name="status" id="status">
-            <option value="Pending">Pending</option>
-            <option value="Complete">Complete</option>
-        </select> {% endcomment %}
         <input type="submit" value="Create Task">
     </form>
 
