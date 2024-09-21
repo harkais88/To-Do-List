@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+</head>
+<body>
+    <h1>My To Do List</h1>
+
+    {% if delete_status%}
+    
+    <h3>{{delete_status}}</h3>
+    
+    {% endif%}
+
+    <table>
+        <tr>
+            <th>TASK</th>
+            <th>STATUS</th>
+        </tr>
+        {% for task in tasks %}
+        <tr>
+            <td> {{task.name}} </td>
+            <td> {{task.status}} </td>
+
+            <td>
+                <form method = "POST" action = "{% url 'delete' task.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete Task">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <hr>
+
+    <h1> Enter your own task </h1>
+    <form method = "POST" action="{% url 'create' %}">
+        {% csrf_token %}
+        <input type="text" name="name" id="name" placeholder="Enter task">
+        <select name="status" id="status">
+            <option value="Pending">Pending</option>
+            <option value="Complete">Complete</option>
+        </select>
+        <input type="submit" value="Create Task">
+    </form>
+
+    {% if create_status %}
+    <h3> {{create_status}} </h3>
+    {% endif %}
+
+</body>
+</html>
